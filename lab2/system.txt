@@ -1,0 +1,4 @@
+codespace
+codespaces-475297
+Mon Sep 14 15:04:22 UTC 2026
+/workspaces/scripting-for-cybersecurity/lab2
