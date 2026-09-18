@@ -1,0 +1,1 @@
+User: Ivan Computer: codespaces-475297 Directory: /workspaces/scripting-for-cybersecurity/lab2 Items: 12
