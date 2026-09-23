@@ -1,0 +1,35 @@
+1.pwd
+2.ls -la
+3.whoami
+hostname
+date
+4.mkdir evidence
+mkdir logs
+mkdir notes
+mkdir scripts
+5.cd logs
+touch access.log auth.log firewall.log
+6.cd revision01
+cd evi+Tab
+cd ..
+7.touch student.txt
+echo "$(whoami)" > student.txt
+cat student.txt
+8.echo "$(hostname)" >> student.txt
+echo "$(date)" >> student.txt
+cat student.txt
+9.man ls 
+ls -lh
+10.man mkdir
+mkdir -p reports/weekly/week01
+
+11.
+12.
+13.
+14.
+15.
+16.
+17.
+18.
+19.
+20.
