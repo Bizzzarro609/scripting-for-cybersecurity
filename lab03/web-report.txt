@@ -1,0 +1,11 @@
+Authentication Analysis
+
+Total Requests: 98
+403 Requests: 34
+404 Requests: 37
+Requests to /admin: 29
+Requests to /.env: 9
+Requests to /sqlmap: 60
+
+     51 203.0.113.10
+TOP Sourec IPs: 51 203.0.113.10
