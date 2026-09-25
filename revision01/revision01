@@ -22,14 +22,35 @@ cat student.txt
 ls -lh
 10.man mkdir
 mkdir -p reports/weekly/week01
-
-11.
-12.
-13.
-14.
-15.
-16.
-17.
-18.
-19.
+11.name="Ivan"
+course="Cybersecurity"
+year="2"
+echo "$name is studying $course in year $year"
+12.echo "$USER"
+echo "$HOME"
+echo "$SHELL"
+echo "$PATH"
+PATH should contain multiple directory paths
+13.which python3
+which bash
+which grep
+which cat
+14.module="Scripting"
+echo "Module: $module"
+echo 'Module: $module'
+15.usrname="$(whoami)"
+hostname="$(hostname)"
+currentdir="$(pwd)"
+echo "User $usrname is logged into $hostname and is currently in $currentdir"
+16.history
+!42
+Ctrl+R
+echo
+17.ls | wc -l
+env | wc -l
+18.env | grep PATH
+ls /usr/bin | grep python
+ls /usr/bin | grep ssh | wc -l
+19.python_count=$(ls /usr/bin | grep python | wc -l)
+echo "Python-related filenames found: $python_count"
 20.
