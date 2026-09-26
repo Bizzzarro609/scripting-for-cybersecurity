@@ -53,4 +53,19 @@ ls /usr/bin | grep python
 ls /usr/bin | grep ssh | wc -l
 19.python_count=$(ls /usr/bin | grep python | wc -l)
 echo "Python-related filenames found: $python_count"
-20.
+20.usrname=$(whoami)
+hostname=$(hostname)
+currentdir=$(pwd)
+shell=$SHELL
+python_path=$(command -v python3)
+env=$(env | wc -l)
+python=$(find . -type f \( -iname '*python*' -o -iname '*.py' \) | wc -l)
+echo "Linux CLI Revision Report" > revision-report.txt
+echo "User: $usrname" >> revision-report.txt
+echo "Host: $hostname" >> revision-report.txt
+echo "Directory: $currentdir" >> revision-report.txt
+echo "Shell: $shell" >> revision-report.txt
+echo "Python: $python_path" >> revision-report.txt
+echo "Environment variables: $env" >> revision-report.txt
+echo "Python-related filenames: $python" >> revision-report.txt
+
