@@ -1,0 +1,18 @@
+File Triage Report
+
+Total Files: 24
+Total Directories: 9
+Python Files: 2
+Shell Scripts: 1
+Log Files: 4
+Configuration Files: 3
+Empty Files: 1
+Archieves: 1
+
+Files Containing admin: ./logs/auth.log
+./logs/access.log
+./backups/users.old
+./evidence/notes.txt
+
+6
+Detected File Types in Evidence: 6
