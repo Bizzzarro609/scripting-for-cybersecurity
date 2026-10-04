@@ -1,0 +1,9 @@
+1. The automated report is more accurate because the numbers are calculated directly using commands. 
+If any numbers are different from my Lab 4 report, the manual report was probably 
+different because I counted or copied something incorrectly.
+
+2. I would only need to change the `CASE_DIR` variable to point to the new collection. 
+In Lab 4, I would have to run all the commands again manually and create a new report.
+
+3. The report shows that `case/evidence/suspicious.dat` is detected as an ELF file,
+ even though the `.dat` filename does not show this.
