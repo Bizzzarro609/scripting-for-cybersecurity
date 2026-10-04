@@ -1,0 +1,16 @@
+Log file        : ../lab03/auth.log
+Total lines     : 184
+Total words     : 2575
+Total characters: 17612
+First line      : Sep 20 08:00:20 server sshd[1001]: Failed password for guest from 203.0.113.10 port 44572 ssh2
+Last line       : Sep 20 10:05:52 server sshd[2004]: Invalid user support from 203.0.113.200 port 60001
+Longest line    : 116 characters
+Failed logins   : 124
+Log file        : case/logs/auth.log
+Total lines     : 60
+Total words     : 840
+Total characters: 5736
+First line      : Sep 20 08:00:20 server sshd[1001]: Failed password for guest from 203.0.113.10 port 44572 ssh2
+Last line       : Sep 20 08:46:20 server sshd[1060]: Failed password for admin from 198.51.100.77 port 63053 ssh2
+Longest line    : 98 characters
+Failed logins   : 45
