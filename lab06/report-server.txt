@@ -1,0 +1,13 @@
+Total failed password events: 124
+Top failed-login IP: 203.0.113.10
+198.51.100.24
+198.51.100.77
+203.0.113.15
+203.0.113.200
+Top 3 source IPs:
+Top 3 failed-login sources:
+15 203.0.113.10 14 198.51.100.24 8 198.51.100.77
+Top 3 targeted usernames:
+     39 admin
+     35 root
+     18 guest

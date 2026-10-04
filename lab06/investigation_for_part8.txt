@@ -1,0 +1,16 @@
+1. In the collected log, the top attacker was `203.0.113.10` with 15 failed attempts. 
+The top three attackers were `203.0.113.10` (15), `198.51.100.24` (14), and `198.51.100.77` (8).
+
+The server log had the same top attacker and the same top three ranking. 
+The collected log would have given the correct answer about who attacked most, even though it had only 45 failed password events compared with 124 in the server log.
+
+2. The complete list of targeted usernames was: admin (39), root (35), guest (18), test (13), backup (13), oracle (5), and invalid (1).
+
+The word `invalid` appeared because one log entry says `Failed password for invalid user postgres`.
+ My pipeline uses a fixed field position, so it picked `invalid` instead of the real username, `postgres`. The correct username for that entry is `postgres`.
+
+3. For `access.log`, `attacker_report.sh` printed 0 failed password events and `None` for the attacker IPs and usernames.
+ The output is not wrong, but it is not meaningful because the script is designed for SSH authentication logs, not web access logs. I would add a check for the log type or use different parsing rules for web access logs.
+
+4. The firewall blocked `203.0.113.10` and `198.51.100.24` on port 22, but they still appear in `auth.log`. 
+One possible explanation is that the SSH attempts happened before the firewall blocked these IPs. Another possibility is that the firewall and authentication logs cover different time periods, so some attempts could have reached the SSH server before or between the blocked connections.
