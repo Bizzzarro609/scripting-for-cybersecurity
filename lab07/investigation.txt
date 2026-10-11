@@ -1,0 +1,72 @@
+alice: CURRENT account
+Role: student
+Status: active
+Failed logins: 0
+Accepted logins: 6
+Risk: NONE
+WARNING: Plaintext credentials found with successful logins!
+david: CURRENT account
+Role: student
+Status: disabled
+Failed logins: 0
+Accepted logins: 0
+Risk: NONE
+bob: CURRENT account
+Role: student
+Status: active
+Failed logins: 0
+Accepted logins: 5
+Risk: NONE
+WARNING: Plaintext credentials found with successful logins!
+eve: CURRENT account
+Role: staff
+Status: active
+Failed logins: 0
+Accepted logins: 3
+Risk: NONE
+admin: LEGACY account
+Failed logins: 17
+Accepted logins: 0
+Risk: HIGH
+WARNING: Attacker is guessing legacy or unknown usernames!
+root: LEGACY account
+Failed logins: 10
+Accepted logins: 0
+Risk: MEDIUM
+WARNING: Attacker is guessing legacy or unknown usernames!
+backup: LEGACY account
+Failed logins: 4
+Accepted logins: 0
+Risk: LOW
+WARNING: Attacker is guessing legacy or unknown usernames!
+oracle: UNKNOWN account
+Failed logins: 3
+Accepted logins: 0
+Risk: LOW
+WARNING: Attacker is guessing legacy or unknown usernames!
+nobody: UNKNOWN account
+Failed logins: 0
+Accepted logins: 0
+Risk: NONE
+
+Questions answers:
+1. Which targeted usernames are current accounts?
+The current accounts are alice, bob, eve and david. None of them had failed login attempts.
+The attacker mainly targeted old accounts and common usernames like admin, root and backup. 
+This suggests the attacker was guessing common system account names rather than targeting specific current users.
+
+2. Which targeted names are legacy accounts? Which would be most dangerous?
+The legacy accounts are admin, root and backup, with 17, 10 and 4 failed login attempts.
+Root would be the most dangerous if it still existed and allowed login, because it could give an attacker full control of the system. 
+Admin could also be dangerous if it had administrator privileges.
+
+3. Were any accepted logins seen for disabled accounts or external addresses?
+No accepted logins were found for the disabled account david. 
+All the provided successful login records came from internal IP addresses (192.168.1.x), although the complete log still needs to be checked for external addresses. 
+This is a good sign, but it does not prove the system is completely secure or that every login was authorised.
+
+4. Which accounts had plaintext credentials and successful logins?
+Alice and bob both had plaintext passwords stored on the workstation and successful logins. 
+Alice had 6 successful logins from 4 different internal IP addresses, while bob had 5 successful logins from 3 different internal IP addresses.
+This is worth reporting because exposed passwords could be used to access these accounts without permission.
+However, the logs alone do not prove that the accounts were compromised.
