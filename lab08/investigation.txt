@@ -1,0 +1,5 @@
+Investigation Results
+IP Address	auth.log	access.log	firewall.log
+203.0.113.10	Found           Found           Found
+198.51.100.24	Found           Found           Found
+203.0.113.200	Found           Not found       Found
