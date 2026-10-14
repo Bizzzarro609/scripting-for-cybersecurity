@@ -1,5 +1,51 @@
-Investigation Results
-IP Address	auth.log	access.log	firewall.log
-203.0.113.10	Found           Found           Found
-198.51.100.24	Found           Found           Found
-203.0.113.200	Found           Not found       Found
+IP address: 198.51.100.77
+Occurrences: 8
+Failed logins: 8
+Risk: MEDIUM
+Firewall entries:
+No firewall entries
+IOC: NOT LISTED
+IP address: 203.0.113.200
+Occurrences: 5
+Failed logins: 5
+Risk: MEDIUM
+Firewall entries:
+BLOCK 203.0.113.200 -> 10.0.0.30:3389
+IOC: LISTED
+IP address: 203.0.113.77
+Occurrences: 12
+Failed logins: 0
+Risk: NONE
+Firewall entries:
+No firewall entries
+IOC: NOT LISTED
+Username: admin
+Failed logins: 17
+Accepted logins: 0
+Account: LEGACY
+Username: alice
+Failed logins: 0
+Accepted logins: 6
+Account: CURRENT
+
+
+Answers:
+
+1. IP address 198.51.100.77
+
+The IP address 198.51.100.77 made 8 failed login attempts but was not found in the IOC list or firewall log. 
+This shows that relying only on IOC lists is not enough, because attackers may use IP addresses that are not listed as suspicious. 
+Checking login attempts and other security logs is also important.
+
+2. IP address 203.0.113.200
+
+The IP address 203.0.113.200 was listed in the IOC list. 
+The firewall blocked its RDP connection on port 3389, while auth.log showed 5 failed SSH login attempts targeting admin, root, oracle and backup. 
+This suggests the attacker was trying to access multiple remote services using different usernames.
+
+3. IP address 203.0.113.77
+
+The IP address 203.0.113.77 was scanning the website for possible vulnerabilities and administrative pages. 
+It requested /admin, /wp-login.php and /robots.txt using tools such as sqlmap, curl and python-requests. 
+Some requests returned 403 (Forbidden) or 404 (Not Found), while others returned 200 (OK). 
+This suggests automated reconnaissance and possible vulnerability scanning, but does not prove that the attack was successful.
