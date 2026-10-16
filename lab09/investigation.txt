@@ -1,0 +1,37 @@
+Investigation Findings
+1.Which log contains the most distinct indicators? Which contains the most indicator lines? Why can those two answers differ?
+
+auth.log and firewall.log contain the most distinct indicators, with 3 each. access.log contains the most indicator lines, with 40, 
+compared with 34 in auth.log and 3 in firewall.log. 
+These results differ because the same indicator can appear repeatedly in a log, 
+increasing the number of matching lines without increasing the number of distinct indicators.
+
+2.Which files were flagged, and why?
+
+case/scripts/report.py and case/scripts/scan.py were flagged because their extensions indicate Python scripts, 
+but the file command detected ASCII text instead. 
+Their contents should be checked to determine whether they contain valid Python code or unexpected content. 
+This mismatch alone does not prove tampering.
+
+3.Which log file in the collection did your survey not include, and why did the globs miss it?
+
+The omitted log is likely a hidden file whose name begins with a dot. 
+The exact filename must be confirmed by checking the case/logs directory. 
+The glob case/logs/* does not match hidden files by default, so the survey skips them.
+
+4.If a new file case/logs/vpn.log were added tomorrow, would file_survey.sh need to change? Why or why not?
+
+No, the script would not need to change. 
+The existing case/logs/* glob automatically includes new non-hidden files in that directory, and the .log extension triggers IOC analysis.
+
+5.Summarise, in three or four sentences, what the collection now tells you about the attack.
+
+The authentication log shows repeated failed SSH login attempts from 
+203.0.113.10, 198.51.100.24, 203.0.113.200, 198.51.100.77, and 203.0.113.15, 
+targeting accounts such as admin, root, guest, and oracle. 
+The web access log shows requests to /admin, /login, /wp-login.php, and /.env, 
+with tools such as sqlmap and curl suggesting automated probing. 
+The firewall log shows blocked traffic to SSH (port 22) and RDP (port 3389), 
+alongside allowed internal traffic to HTTP (port 80) and HTTPS (port 443). 
+Workstation evidence includes a password-related text file, scripts, a ZIP archive, a PNG image, and suspicious.dat, 
+which was identified as an unusual ELF object requiring further examination.
