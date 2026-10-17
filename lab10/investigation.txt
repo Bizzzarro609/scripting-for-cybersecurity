@@ -1,0 +1,18 @@
+1. Final exit code
+The final exit code was 1, which matches the report because 8 IOC matches were found.
+
+2. Logs scanned
+A total of 4 log files were scanned:
+
+- firewall.log: 3 IOC matches
+- auth.log: 3 IOC matches
+- access.log: 2 IOC matches
+- old.log: 0 IOC matches
+
+Total: 8 IOC matches.
+
+3. Early break
+The early break triggered for auth.log after finding 3 IOC matches. No matches were missed because check_iocs.sh found the same number of matches in every log file.
+
+4. Importance of exit codes
+A meaningful exit code allows an automated system to detect suspicious activity and trigger an alert without someone manually checking the output.

@@ -1,0 +1,23 @@
+Stopped checking case/logs/firewall.log early: 3 IOC matches found.
+File: case/logs/firewall.log
+Total lines: 28
+Failed logins: 0
+IOC matches: 3
+------------------------
+Stopped checking case/logs/auth.log early: 3 IOC matches found.
+File: case/logs/auth.log
+Total lines: 28
+Failed logins: 45
+IOC matches: 3
+------------------------
+File: case/logs/access.log
+Total lines: 28
+Failed logins: 0
+IOC matches: 2
+------------------------
+File: case/nested/archive/old.log
+Total lines: 28
+Failed logins: 0
+IOC matches: 0
+------------------------
+Total IOC matches across all logs: 8
