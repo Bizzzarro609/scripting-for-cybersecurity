@@ -2,7 +2,7 @@
 
 ## Источники и границы проверки
 
-Собраны Section A A1–A8, полные скрипты B1–B3 и оба скрипта B4, теоретические пояснения и команды проверки. Проведена проверка кода по доступным условиям и оговорённым предположениям. Полного текста условий B1–B3 нет, поэтому соответствие всем требованиям преподавателя не подтверждено.
+Собраны Section A A1–A8, полные скрипты B1–B3 и оба скрипта B4, теоретические пояснения и команды проверки. Проведена проверка кода по доступным условиям и оговорённым предположениям. B1–B4 сверены с присланными фотографиями. Section A A1–A8 также сверен с новыми фотографиями задания. Продолжение B4(q) на фотографиях обрезано. Выполнение на оригинальных данных пока не проверено.
 
 Исходные данные exam-data не предоставлены. Численные результаты, имена подозрительных файлов и фактические ALERT зависят от них.
 
@@ -17,6 +17,8 @@
 - wc -l считает символы перевода строки; предполагается, что каждая строка лога заканчивается переводом строки.
 
 ## Section A
+
+Сверено с новыми фото A1–A8: команды соответствуют видимым требованиям при предположениях о данных, указанных выше. Для A3 требуется дополнительно назвать реальный файл с неверным расширением и его тип по результату file. Для A7 необходимо подтвердить колонки по заголовку CSV. Фактические результаты без exam-data не установлены.
 
 **General instructions:** provide one Linux command or pipeline for each question. The questions below are paraphrased from the available photographs, not verbatim transcriptions.
 
@@ -118,9 +120,24 @@ find exam-data -type f -name '*.log' -print0 | xargs -0 -r wc -l
 
 ## Section B
 
-### B1 — Log file summary
+**General script requirements (from the photographs):** Each script must start with a correct shebang, be executable, quote variables containing filenames or user input, and send error messages to standard error. On Linux, make the saved scripts executable with chmod +x before running them.
 
-**Task — reconstructed from the supplied script; the original exam wording is unavailable:** Write a Bash script that accepts exactly one file path. Exit with code 1 if the number of arguments is incorrect, 2 if the path is not a regular file, and 3 if the file is empty. For a non-empty file, print its path, line count, counts of `Failed password` and `Accepted password` records, and the first three fields of the first and last lines. Exit with code 0 on success. The readability check, which returns code 2, is an addition in this solution.
+### B1 — logsummary.sh: Log file summary
+
+**Task (from the supplied photographs, paraphrased):** Write `logsummary.sh` to accept one file path and print a short summary.
+
+1. If the number of arguments is not exactly one, print a usage message and exit with code 1.
+2. If the file does not exist, print an error and exit with code 2.
+3. If the file exists but is empty, print an error and exit with code 3.
+4. Otherwise, print each item on its own line, using command substitution:
+   - the file name;
+   - the number of lines;
+   - the number of `Failed password` lines;
+   - the number of `Accepted password` lines;
+   - the timestamp of the first line and of the last line (the first three fields of each line).
+5. Exit with code 0.
+
+**Required tests:** Run the script with `exam-data/case/logs/auth.log`, with `exam-data/case/evidence/empty.bin`, with a nonexistent file name, and with no arguments. Check each exit code using `echo $?`. Write the answers in `answers.txt`.
 
 **Solution:**
 
@@ -166,24 +183,24 @@ echo "Last     : $last"
 exit 0
 ```
 
-Основная логика присланного решения корректна. Добавлена проверка чтения; grep -Fc ищет буквальный текст. Перенаправление входа позволяет обработать имя, начинающееся с дефиса. Сохранены коды: 1 — неверное число аргументов, 2 — нет обычного файла или его нельзя прочитать, 3 — пустой файл, 0 — успех. Код 2 для ошибки чтения — принятое здесь дополнение, поскольку полного условия B1 нет.
+Основная логика присланного решения корректна. Добавлена проверка чтения; grep -Fc ищет буквальный текст. Перенаправление входа позволяет обработать имя, начинающееся с дефиса. Сохранены коды: 1 — неверное число аргументов, 2 — нет обычного файла или его нельзя прочитать, 3 — пустой файл, 0 — успех. Код 2 для ошибки чтения — принятое здесь дополнение, для недоступного на чтение файла; это дополнительная обработка ошибки, отдельно не оговорённая на фото.
 
 Предполагается syslog-формат, где первые три поля — месяц, день и время. First и Last показывают первую и последнюю запись в порядке файла, а не вычисленные минимальную и максимальную даты. Для ISO-формата или записей с hostname в первых трёх полях эту часть нужно адаптировать. wc -l считает переводы строк: предполагается LF в конце каждой записи. Подсчёт событий корректен при одной записи на строку. Автоматический запуск не подтверждён из-за ранее описанной ошибки Bash.
 
 
-### B2 — IP address risk report
+### B2 — check_ip.sh: Investigate an IP address
 
-**Task — reconstructed from the supplied script; the original exam wording is unavailable:** Write a Bash script that accepts one IPv4 address. Count its `Failed password` and `Accepted password` records in `exam-data/case/logs/auth.log`, check whether it appears in `exam-data/case/evidence/watchlist.txt`, and print a report.
+**Task (paraphrased from the supplied photographs):** Write `check_ip.sh` which takes one IP address as an argument and investigates it.
 
-- Assign risk based on the number of failures: 0 — `NONE`, 1–4 — `LOW`, 5–9 — `MEDIUM`, 10 or more — `HIGH`.
-- Print a warning if both failed and successful logins are present. This solution does not check their chronological order.
-- Return 0 if the address appears in either the log or the watchlist, 3 if it appears in neither, and 1 for invalid arguments.
-- Validation of each address component against the range 0–255 and input readability checks are additions in this solution. Input read errors return 1.
+1. If there is not exactly one argument, or it does not look like an IPv4 address (four groups of digits separated by dots), print an error and exit with code 1.
+2. Count the `Failed password` and `Accepted password` lines for that exact address in `exam-data/case/logs/auth.log`. Do not count a different address merely because it contains the search text.
+3. Use an `if` / `elif` / `else` chain to classify failed attempts: 0 = `NONE`, 1–4 = `LOW`, 5–9 = `MEDIUM`, 10 or more = `HIGH`.
+4. Print whether the address is listed in `exam-data/intel/watchlist.txt` (YES/NO or equivalent). Use an exact whole-line match.
+5. Print every line in `exam-data/case/logs/firewall.log` for that address, or `Firewall: no entries` if there are none.
+6. If the address has both failed and accepted logins, print `WARNING: successful login after failed attempts.`
+7. Exit with code 0 if the address appears in any file in `exam-data/case/logs/`, or code 3 if it appears nowhere in that directory.
 
 **Solution:**
-
-Полный скрипт B2.sh с упрощённым подсчётом:
-
 ```bash
 #!/bin/bash
 
@@ -203,7 +220,7 @@ if [ -n "$extra" ] || [[ "$ip" == *. ]]; then
 fi
 
 for part in "$first" "$second" "$third" "$fourth"; do
-    # Each part must contain one to three digits.
+    # The task requires four groups of digits separated by dots.
     case "$part" in
         ''|*[!0-9]*)
             echo "Error: Provide one IPv4 address" >&2
@@ -211,28 +228,32 @@ for part in "$first" "$second" "$third" "$fourth"; do
             ;;
     esac
 
-    if [ "${#part}" -gt 3 ]; then
-        echo "Error: Provide one IPv4 address" >&2
-        exit 1
-    fi
-
-    # 10# makes Bash read the number as decimal, including 08 or 09.
-    if [ "$((10#$part))" -gt 255 ]; then
-        echo "Error: Provide one IPv4 address" >&2
-        exit 1
-    fi
 done
 
 log="exam-data/case/logs/auth.log"
-watchlist="exam-data/case/evidence/watchlist.txt"
+watchlist="exam-data/intel/watchlist.txt"
+firewall="exam-data/case/logs/firewall.log"
+log_dir="exam-data/case/logs"
 
-if [ ! -r "$log" ] || [ ! -r "$watchlist" ]; then
-    echo "Error: Cannot read auth.log or watchlist.txt" >&2
+if [ ! -r "$log" ] || [ ! -r "$watchlist" ] || [ ! -r "$firewall" ]; then
+    echo "Error: Cannot read input files" >&2
     exit 1
 fi
 
-failed=$(grep -F "Failed password" "$log" | grep -Fwc "$ip" || true)
-accepted=$(grep -F "Accepted password" "$log" | grep -Fwc "$ip" || true)
+# Select lines containing the exact address, including in SRC=IP fields.
+# Keep dots inside an address so a longer dotted address cannot match.
+ip_lines() {
+    awk -v ip="$ip" '{
+        original=$0
+        gsub(/[^0-9.]/, " ")
+        for (i=1; i<=NF; i++) {
+            if ($i==ip) {print original; break}
+        }
+    }' "$1"
+}
+
+failed=$(ip_lines "$log" | grep -F "Failed password" | grep -Fwc "$ip" || true)
+accepted=$(ip_lines "$log" | grep -F "Accepted password" | grep -Fwc "$ip" || true)
 
 if [ "$failed" -eq 0 ]; then
     risk="NONE"
@@ -256,58 +277,85 @@ echo "Accepted : $accepted"
 echo "Risk     : $risk"
 echo "Watchlist: $listed"
 
-if [ "$failed" -gt 0 ] && [ "$accepted" -gt 0 ]; then
-    echo "WARNING: both failed and successful logins found"
-fi
-
-if grep -Fwq "$ip" "$log" || grep -Fxq "$ip" "$watchlist"; then
-    exit 0
+firewall_lines=$(ip_lines "$firewall")
+if [ -n "$firewall_lines" ]; then
+    printf '%s\n' "$firewall_lines"
 else
-    exit 3
+    echo "Firewall: no entries"
 fi
+
+if [ "$failed" -gt 0 ] && [ "$accepted" -gt 0 ]; then
+    echo "WARNING: successful login after failed attempts."
+fi
+
+for logfile in "$log_dir"/*; do
+    [ -f "$logfile" ] || continue
+    if [ ! -r "$logfile" ]; then
+        echo "Error: Cannot read $logfile" >&2
+        exit 1
+    fi
+    matches=$(ip_lines "$logfile")
+    if [ -n "$matches" ]; then
+        exit 0
+    fi
+done
+
+exit 3
 ```
 
-Ключевые строки подсчёта:
+Проверено по фото: исправлен путь watchlist, добавлен firewall и поиск во всех обычных файлах непосредственно в каталоге logs. Наличие только в watchlist не даёт код 0. Проверяется именно требуемая форма «четыре группы цифр»; проверка диапазона 0–255 условием не требуется.
+
+Функция ip_lines заменяет символы, кроме цифр и точек, пробелами и сравнивает полученные поля с IP целиком. Поэтому похожие и более длинные адреса не учитываются. Она подходит для обычных текстовых логов с IP, отделёнными пробелами, знаками `=` или другой пунктуацией; точка непосредственно после IP без разделителя считается частью поля. Для подсчётов сохранён понятный grep -Fwc. Предполагаются читаемые текстовые логи без подкаталогов для пункта 7, watchlist с одним адресом на строку и окончаниями LF.
+
+Текст WARNING восстановлен именно как в условии. Условие требует наличия обоих видов событий, но не проверки времени: сама эта строка не доказывает, что успешный вход произошёл после отказов.
+
+**Required tests:** Run the script for `203.0.113.10`, `198.51.100.77`, `192.168.1.10`, `203.0.113.1`, and `abc`. Write the results in `answers.txt`.
 
 ```bash
-failed=$(grep -F 'Failed password' "$log" | grep -Fwc "$ip" || true)
-accepted=$(grep -F 'Accepted password' "$log" | grep -Fwc "$ip" || true)
+chmod +x check_ip.sh
+./check_ip.sh 203.0.113.10
+echo $?
+./check_ip.sh 198.51.100.77
+echo $?
+./check_ip.sh 192.168.1.10
+echo $?
+./check_ip.sh 203.0.113.1
+echo $?
+./check_ip.sh abc
+echo $?
 ```
 
-Важные результаты проверки остальной логики:
+**B2(q) — Compare the gaps in the server's defences:** Compare your script's output for `203.0.113.10` and `198.51.100.77`. Which address represents the bigger gap in the server's defences? Explain in two or three sentences, using your script's output. Write the answer in `answers.txt`.
 
-- Границы NONE=0, LOW=1–4, MEDIUM=5–9, HIGH>=10 реализованы последовательно; соответствие именно условию B2 нельзя подтвердить без его текста.
-- grep -Fxq корректен для watchlist с одним IP на строку, без пробелов и CRLF.
-- grep -w проверяет границы слова, а точка не является символом слова. Поэтому grep -Fwc "$ip" не гарантирует строгое совпадение целого адреса для произвольного текста. Для стандартного SSH-лога с IP, отделёнными пробелами, учебный вариант подходит. Более точный простой вариант ниже.
-- Наличие и отказов, и успешных входов не доказывает, что вход произошёл ПОСЛЕ отказов. Предупреждение исправлено, чтобы не заявлять непроверенную последовательность.
-- Добавлены проверки чтения файлов, чтобы отсутствие входных данных не выглядело как нулевые счётчики.
+**Пояснение к ответу:** сравните число отказов и успешных входов, наличие в watchlist и строки firewall. Успешная аутентификация подозрительного адреса — более серьёзное свидетельство пробела, чем одни заблокированные попытки. Без exam-data выбрать конкретный адрес и привести фактические числа нельзя.
+### B3 — sweep.sh: IOC Sweep and Hash Check
 
-Для точного подсчёта адреса источника можно сначала выделить поле после from, затем сравнить строку целиком:
+**Task (paraphrased from the supplied photographs):** Write `sweep.sh` (no arguments), which does two things.
 
-```bash
-failed=$(grep -F 'Failed password' "$log" | awk '{for(i=1;i<NF;i++) if($i=="from") {print $(i+1); break}}' | grep -Fxc "$ip" || true)
-```
+**Part 1 — IOC sweep:** Using nested `for` loops, check every indicator in `exam-data/intel/iocs.txt` against every file matching `exam-data/case/logs/*.log`.
 
-### B3 — IOC Sweep and Hash Check
+- For each indicator and log where the indicator appears, print the indicator, the log filename without its directory, and the number of matching lines.
+- Match indicators as fixed strings and whole words.
+- After each indicator, print how many logs it was seen in.
+- At the end, print the total number of matching lines across all indicators and logs.
+- Do not print errors or incorrect totals when an indicator matches nothing.
 
-**Task — partially reconstructed from the supplied script.** The photographs show the end of Part 1 and the requirements for Part 2; the beginning of Part 1 is unavailable.
-
-**Part 1 — IOC Sweep (from the script and the visible requirements):** Read indicators from `exam-data/case/evidence/iocs.txt`. Search the `.log` files in `exam-data/case/logs` for each indicator. For each matching log, print the indicator, log filename, and matching line count. After each indicator, print how many logs contain it. Finally, print the total number of matching lines across all indicator/log pairs. An indicator with no matches must produce correct zero counts without errors. Substring matching and searching only the top directory level are assumptions of this solution, not confirmed requirements of the original task.
-
-**Part 2 — Hash Check (from the photographs):** Use a `for` loop over `exam-data/case/evidence/*` to calculate the MD5 hash of every regular file. Print `KNOWN BAD: <file>` if the hash appears as a complete line in the hash list; otherwise, print `CLEAN: <file>`. Your script must work correctly when a filename contains spaces. The path `exam-data/case/evidence/ioc_hashes.txt` comes from the supplied script and must be checked against the actual dataset.
+**Part 2 — Hash check:** Using a `for` loop over `exam-data/case/evidence/*`, calculate the MD5 hash of every regular file. Print `KNOWN BAD: <file>` if its hash appears as a complete line in `iocs.txt`; otherwise, print `CLEAN: <file>`. The loop must still work correctly if a filename contains a space.
 
 **Solution:**
-
 ```bash
 #!/bin/bash
 
-ioc_file="exam-data/case/evidence/iocs.txt"
+ioc_file="exam-data/intel/iocs.txt"
 log_dir="exam-data/case/logs"
 evidence_dir="exam-data/case/evidence"
-hash_file="exam-data/case/evidence/ioc_hashes.txt"
+
+if [ "$#" -ne 0 ]; then
+    echo "Usage: $0" >&2
+    exit 1
+fi
 
 if [ ! -f "$ioc_file" ] || [ ! -r "$ioc_file" ] ||
-   [ ! -f "$hash_file" ] || [ ! -r "$hash_file" ] ||
    [ ! -d "$log_dir" ] || [ ! -d "$evidence_dir" ]; then
     echo "Error: Check input files and directories" >&2
     exit 1
@@ -316,7 +364,9 @@ fi
 total=0
 
 # Part 1: IOC Sweep
-while IFS= read -r indicator || [ -n "$indicator" ]; do
+# Read one complete indicator per array element, preserving spaces.
+mapfile -t indicators < "$ioc_file"
+for indicator in "${indicators[@]}"; do
     indicator=$(printf '%s' "$indicator" | tr -d '\r')
     [ -z "$indicator" ] && continue
     logs_found=0
@@ -324,7 +374,7 @@ while IFS= read -r indicator || [ -n "$indicator" ]; do
     for logfile in "$log_dir"/*.log; do
         [ -f "$logfile" ] || continue
 
-        count=$(grep -Fc -- "$indicator" "$logfile")
+        count=$(grep -Fwc -- "$indicator" "$logfile")
         result=$?
         if [ "$result" -gt 1 ]; then
             echo "Error: Cannot search $logfile" >&2
@@ -339,7 +389,7 @@ while IFS= read -r indicator || [ -n "$indicator" ]; do
     done
 
     echo "$indicator found in $logs_found logs"
-done < "$ioc_file"
+done
 
 echo "Total matching lines: $total"
 
@@ -359,7 +409,7 @@ for file in "$evidence_dir"/*; do
     fi
     hash=$(printf '%s\n' "$digest" | awk '{print $1}')
 
-    matches=$(tr -d '\r' < "$hash_file" | grep -Fxc -- "$hash")
+    matches=$(tr -d '\r' < "$ioc_file" | grep -Fxc -- "$hash")
     result=$?
     if [ "$result" -gt 1 ]; then
         echo "Error: Cannot compare hashes" >&2
@@ -376,18 +426,20 @@ done
 exit 0
 ```
 
-Проверка и исправления:
+Исправления по оригиналу: вложенные for вместо внешнего while; grep -Fwc вместо поиска подстроки; единый список exam-data/intel/iocs.txt для обоих этапов. Отдельный ioc_hashes.txt условием не предусмотрен.
 
-- Для общего поиска IOC использован grep -Fc: индикатор ищется как буквальная подстрока. Исходный -w мог пропустить индикатор внутри другого текста. Если условие требует именно отдельное слово, следует вернуть grep -Fwc. Полного условия Part 1 нет, поэтому поиск подстроки — явное предположение.
-- Один IOC на строку, без заголовка и комментариев. Пустые строки пропускаются; CRLF и последняя строка без LF поддерживаются. Дубли индикаторов считаются повторно.
-- Ищутся только *.log непосредственно в log_dir. Рекурсивность не предполагается. Отсутствие логов и отсутствие совпадений дают нулевые счётчики.
-- Total — сумма совпавших строк по парам индикатор/лог. Одна строка с двумя разными IOC учитывается дважды. Повтор одного IOC в строке считается один раз.
-- Ошибка grep теперь прерывает скрипт, вместо превращения её в результат без совпадений через || true.
-- Хеши: один MD5 в нижнем регистре на строку, без имён файлов и пробелов. CRLF удаляется перед сравнением. md5sum получает файл через stdin, поэтому пробелы и обратные косые черты в имени не искажают извлечение хеша.
-- Цикл evidence_dir/* соответствует видимому на фото требованию for по этой маске: только файлы верхнего уровня, без скрытых. Сами iocs.txt и ioc_hashes.txt также проверяются, если лежат там.
-- CLEAN оставлено как требуемая метка. Оно означает только отсутствие хеша в данном списке и не доказывает безопасность файла.
+mapfile -t indicators читает строки в массив Bash: одна строка — один индикатор. Внешний for перебирает этот массив, внутренний for — логи. Так сохраняются даже индикаторы с пробелами. Требуется Bash 4 или новее. Пустые строки пропускаются, CR из CRLF удаляется; заголовки и комментарии не предполагаются. Дубликаты индикаторов будут обработаны повторно.
 
+Счётчик total суммирует строки по парам индикатор/лог: одна строка, совпавшая с двумя разными индикаторами, учитывается дважды. Повторы одного индикатора внутри одной строки считаются один раз. grep с кодом 1 означает отсутствие совпадений и даёт count=0; код выше 1 обрабатывается как ошибка.
 
+Маски *.log и evidence/* соответствуют условию: только верхний уровень, без скрытых файлов. Кавычки вокруг переменных сохраняют имена с пробелами. Список предполагает один индикатор на строку; MD5 для сравнения — в нижнем регистре, без лишних пробелов. CLEAN означает только отсутствие хеша в данном списке, а не доказанную безопасность файла.
+
+```bash
+chmod +x sweep.sh
+bash -n sweep.sh
+./sweep.sh
+echo $?
+```
 **B3(q) — The empty file hash (paraphrased from the photographs):** Run `md5sum exam-data/case/evidence/empty.bin`. A colleague suggests adding this hash to the indicator list because the filename looks suspicious. What is this hash, and why would it be a poor indicator to act on? Write your answer in `answers.txt`.
 
 **Ответ:** MD5 пустого файла равен d41d8cd98f00b204e9800998ecf8427e. Само по себе это плохой индикатор вредоносности: одинаковый хеш будет у любого пустого файла, включая безвредные. Название empty.bin также не доказывает вредоносность. Ответ применим, только если файл действительно имеет размер 0 байт.
@@ -398,6 +450,8 @@ md5sum exam-data/case/evidence/empty.bin
 ```
 
 ### B4, Part 1 — accounts.sh
+
+Сверено с новыми фото B4: требования к CSV-циклу, пропуску заголовка, формату вывода, очистке department, ALERT и итоговым счётчикам учтены. Порядок колонок остаётся предположением до получения CSV.
 
 **Task (from the photographs):** Write `accounts.sh`, using a `while IFS=',' read -r ...` loop to read `exam-data/intel/users.csv`.
 
@@ -455,6 +509,8 @@ exit 0
 
 ### B4, Part 2 — find_logs.sh
 
+Сверено с новыми фото B4: рекурсивный поиск .log, find -print0, цикл while с NUL-разделителем и сохранение итогов после цикла учтены.
+
 **Task (from the photographs):** Write `find_logs.sh` to find every `.log` file under `exam-data`, at any depth, using `find -print0` and a `while IFS= read -r -d '' ...` loop. For each file, print its name and line count. After the loop, print the number of logs found and the total number of lines. The final totals must remain correct when printed after the loop.
 
 **Solution:**
@@ -505,26 +561,25 @@ exit 0
 
 ## Тестовые команды
 
-Сохраните полные блоки Section B как B1.sh, B2.sh, B3.sh, accounts.sh и find_logs.sh рядом с каталогом exam-data. Используйте Bash, не sh.
+Сохраните полные блоки Section B как logsummary.sh, check_ip.sh, sweep.sh, accounts.sh и find_logs.sh рядом с каталогом exam-data. Используйте Bash, не sh.
 
 ```bash
-bash -n B1.sh
-bash -n B2.sh
-bash -n B3.sh
+chmod +x logsummary.sh check_ip.sh sweep.sh accounts.sh find_logs.sh
+bash -n logsummary.sh
+bash -n check_ip.sh
+bash -n sweep.sh
 bash -n accounts.sh
 bash -n find_logs.sh
 
-bash B1.sh exam-data/case/logs/auth.log
+./logsummary.sh exam-data/case/logs/auth.log
 echo "Exit: $?"
-bash B1.sh
+./logsummary.sh
 echo "Exit: $?"
-bash B1.sh missing-file.log
+./logsummary.sh missing-file.log
 echo "Exit: $?"
-empty_test=$(mktemp)
-bash B1.sh "$empty_test"
+./logsummary.sh exam-data/case/evidence/empty.bin
 echo "Exit: $?"
-rm -- "$empty_test"
-bash B3.sh
+bash sweep.sh
 echo "Exit: $?"
 head -n 1 exam-data/intel/users.csv
 cat -A exam-data/intel/users.csv
@@ -534,14 +589,12 @@ echo "Exit: $?"
 bash find_logs.sh
 echo "Exit: $?"
 
-bash B2.sh 192.0.2.10
+bash check_ip.sh 192.0.2.10
 echo "Exit: $?"
-bash B2.sh
+bash check_ip.sh
 echo "Exit: $?"
-bash B2.sh 999.1.1.1
+bash check_ip.sh abc
 echo "Exit: $?"
 ```
 
-Для B2 ожидается 1 при неверном аргументе; 0 при найденном IP в логе или watchlist; 3 при отсутствии в обоих. Для воспроизводимого теста используйте копии учебных данных.
-
-Проведена проверка кода по тексту и условиям на фото. Автоматический запуск не состоялся: установленный Git Bash завершился с Windows-ошибкой доступа ещё до выполнения скриптов. Поэтому успешное прохождение синтаксических и функциональных тестов не подтверждено. Оригинальное exam-data также не предоставлено.
+Для B2 ожидается 1 при неверном аргументе; 0 при найденном IP в любом файле каталога logs; 3 при отсутствии в этом каталоге. Для воспроизводимого теста используйте копии учебных данных.
