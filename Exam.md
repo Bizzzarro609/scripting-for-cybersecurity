@@ -231,7 +231,7 @@ for part in "$first" "$second" "$third" "$fourth"; do
 done
 
 log="exam-data/case/logs/auth.log"
-watchlist="exam-data/intel/watchlist.txt"
+watchlist="exam-data/intel/iocs.txt"
 firewall="exam-data/case/logs/firewall.log"
 log_dir="exam-data/case/logs"
 
@@ -252,8 +252,8 @@ ip_lines() {
     }' "$1"
 }
 
-failed=$(ip_lines "$log" | grep -F "Failed password" | grep -Fwc "$ip" || true)
-accepted=$(ip_lines "$log" | grep -F "Accepted password" | grep -Fwc "$ip" || true)
+failed=$(ip_lines "$log" | grep -Fc "Failed password" || true)
+accepted=$(ip_lines "$log" | grep -Fc "Accepted password" || true)
 
 if [ "$failed" -eq 0 ]; then
     risk="NONE"
@@ -266,9 +266,9 @@ else
 fi
 
 if grep -Fxq "$ip" "$watchlist"; then
-    listed="YES"
+    listed="yes"
 else
-    listed="NO"
+    listed="no"
 fi
 
 echo "IP       : $ip"
@@ -285,7 +285,7 @@ else
 fi
 
 if [ "$failed" -gt 0 ] && [ "$accepted" -gt 0 ]; then
-    echo "WARNING: successful login after failed attempts."
+    echo "WARNING: successful login after failed attempts"
 fi
 
 for logfile in "$log_dir"/*; do
