@@ -419,7 +419,7 @@ for file in "$evidence_dir"/*; do
     if [ "$matches" -gt 0 ]; then
         echo "KNOWN BAD: $file"
     else
-        echo "CLEAN: $file"
+        echo "clean: $file"
     fi
 done
 
